@@ -24,3 +24,13 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+.hide-node-bg .react-flow__node {
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+.hide-node-bg .react-flow__node:hover {
+    background: rgba(55, 65, 81, 0.1) !important;
+}
