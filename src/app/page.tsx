@@ -11,7 +11,7 @@ export default function Home() {
                 <div className="container mx-auto flex justify-between items-center">
                     <div className="w-24"> {/* Spacer */}</div>
                     <h1 className="text-xl font-semibold">Flow Editor</h1>
-                    <div className="w-24 flex justify-end"> {/* GitHub icon container */}
+                    <div className="w-24 flex justify-left"> {/* GitHub icon container */}
                         <a 
                             href="https://github.com/19zgunther/nextjs_component_drafter" 
                             target="_blank" 

@@ -90,6 +90,18 @@ class AuthService {
         console.log("getEmailFromAuthCookie() Failed, auth cookie not in inMemoryAuthCookieToUserEmail");
         return null;
     }
+
+    /**
+     * Logout the user by deleting the auth cookie
+     * @param authCookie 
+     */
+    logout(authCookie: string | null | undefined): void {
+        if (authCookie) {
+            if (authCookie in this.inMemoryAuthCookieToUserEmail) {
+                delete this.inMemoryAuthCookieToUserEmail[authCookie];
+            }
+        }
+    }
 }
 
 const authService = new AuthService();

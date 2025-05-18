@@ -20,7 +20,14 @@ class FileService {
         return file;
     }
 
-    getAllFiles(email: string): FlowFile[] {
+    getAllFiles(email: string | null | undefined): FlowFile[] {
+        /**
+         * If email is null, return all public files
+         * If email is not null, return all files for that user
+         */
+        if (!email) {
+            return Object.values(this.files).filter(file => file.isPublic);
+        }
         return Object.values(this.files).filter(file => file.email === email || file.isPublic);
     }
 

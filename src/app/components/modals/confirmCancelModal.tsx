@@ -7,9 +7,10 @@ interface ConfirmCancelModalProps {
     onConfirm: () => void;
     message: string;
     title: string;
+    confirmButtonText: string;
 }
 
-function ConfirmCancelModal({ isOpen, onClose, onConfirm, message, title }: ConfirmCancelModalProps) {
+function ConfirmCancelModal({ isOpen, onClose, onConfirm, message, title, confirmButtonText }: ConfirmCancelModalProps) {
     if (!isOpen) return null;
 
     return (
@@ -29,7 +30,7 @@ function ConfirmCancelModal({ isOpen, onClose, onConfirm, message, title }: Conf
                         onClick={onConfirm}
                         className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
                     >
-                        Delete
+                        {confirmButtonText}
                     </button>
                 </div>
             </div>

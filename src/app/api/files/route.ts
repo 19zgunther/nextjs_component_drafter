@@ -8,9 +8,8 @@ export async function GET() {
     const cookieStore = await cookies();
     const authCookie = cookieStore.get('authCookie');
     const email = authService.getEmailFromAuthCookie(authCookie?.value);
-    if (!email) {
-        return new Response("Unauthorized", { status: 401 });
-    }
+
+    // Allow all users to access public files
     const files = fileService.getAllFiles(email);
     return Response.json(files);
 }
@@ -20,6 +19,7 @@ export async function POST(req: Request) {
     const authCookie = cookieStore.get('authCookie');
     const email = authService.getEmailFromAuthCookie(authCookie?.value);
 
+    // Only allow logged in users to save files
     if (!email) {
         return new Response("Unauthorized", { status: 401 });
     }

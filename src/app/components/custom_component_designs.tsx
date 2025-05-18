@@ -1,5 +1,6 @@
 import { Position } from 'reactflow';
 
+// TODO: Make editor to make more of these (Resistors, Capacitors, etc.)
 
 export const LED_DESGIN = {
     width: 15,

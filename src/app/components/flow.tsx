@@ -10,7 +10,7 @@ import { nodeTypes, NodeType } from './custom_nodes';
 import { LED_DESGIN, BATTERY_DESGIN } from './custom_component_designs';
 
 
-function Flow({file, setFile, handleSaveFile, setIsConfirmDeleteOpen}: {file: FlowFile, setFile: (file: FlowFile) => void, handleSaveFile: () => void, setIsConfirmDeleteOpen: (isOpen: boolean) => void}) {
+function Flow({file, setFile, handleSaveFile, setIsConfirmDeleteOpen, isLoggedIn}: {file: FlowFile, setFile: (file: FlowFile) => void, handleSaveFile: () => void, setIsConfirmDeleteOpen: (isOpen: boolean) => void, isLoggedIn: boolean }) {
 
     const onNodesChange = useCallback(
         (changes: any) => {
@@ -129,33 +129,36 @@ function Flow({file, setFile, handleSaveFile, setIsConfirmDeleteOpen}: {file: Fl
                     </button>
                 </div>
                 <div className='flex items-center gap-2'>
-                    <input
-                        type="text"
-                        value={file.fileName}
-                        onChange={(e) => setFile({...file, fileName: e.target.value})}
-                        placeholder="File name"
-                        className="bg-gray-800 text-white px-3 py-1 rounded-md border border-gray-700 focus:outline-none focus:border-blue-500"
-                    />
-                    <button 
-                        onClick={handleSaveFile}
-                        className='bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700'
-                    >
-                        Save Diagram
-                    </button>
-                    <button
-                        onClick={() => setFile({...file, isPublic: !file.isPublic})}
-                        className='bg-gray-800 text-white px-3 py-1 rounded-md hover:bg-gray-700'
-                    >
-                        {file.isPublic ? "Make Private" : "Make Public"}
-                    </button>
-                    {file.fileName && (
-                        <button
-                            onClick={() => setIsConfirmDeleteOpen(true)}
-                            className='bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700'
+                    {isLoggedIn && 
+                    <>
+                        <input
+                            type="text"
+                            value={file.fileName}
+                            onChange={(e) => setFile({...file, fileName: e.target.value})}
+                            placeholder="File name"
+                            className="bg-gray-800 text-white px-3 py-1 rounded-md border border-gray-700 focus:outline-none focus:border-blue-500"
+                        />
+                        <button 
+                            onClick={handleSaveFile}
+                            className='bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700'
                         >
-                            Delete Diagram
+                            Save Diagram
                         </button>
-                    )}
+                        <button
+                            onClick={() => setFile({...file, isPublic: !file.isPublic})}
+                            className='bg-gray-800 text-white px-3 py-1 rounded-md hover:bg-gray-700'
+                        >
+                            {file.isPublic ? "Make Private" : "Make Public"}
+                        </button>
+                        {file.fileName && (
+                            <button
+                                onClick={() => setIsConfirmDeleteOpen(true)}
+                                className='bg-red-600 text-white px-3 py-1 rounded-md hover:bg-red-700'
+                            >
+                                Delete Diagram
+                            </button>
+                        )}
+                    </>}
                 </div>
             </div>
             <ReactFlow 

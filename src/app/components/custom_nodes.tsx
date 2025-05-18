@@ -151,6 +151,7 @@ function ComponentNode({ data, selected }: { data: NodeData, selected: boolean }
     const design = data.design;
 
     useEffect(() => {
+        // Constantly re-render the canvas to update the display
         const interval = setInterval(() => {
             if (canvasRef.current && design) {
                 renderComponentNodeCanvas(canvasRef.current, design);

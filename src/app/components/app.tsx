@@ -2,6 +2,10 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import 'reactflow/dist/style.css';
+import { Button } from '@mui/material';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
+import FilesIcon from '@mui/icons-material/Folder';
 
 // Local imports
 import { FlowFile, SaveStatus } from './interfaces';
@@ -16,8 +20,10 @@ function App() {
     const [file, setFile] = useState<FlowFile>({fileName: "", nodes: [], edges: [], email: "", isPublic: false});
     const [isSaveModalOpen, setSaveModalOpen] = useState<boolean>(false);
     const [isLoadFileModalOpen, setLoadFileModalOpen] = useState<boolean>(true); // Open by default
+    const [isConfirmLogoutOpen, setIsConfirmLogoutOpen] = useState<boolean>(false);
     const [saveStatus, setSaveStatus] = useState<SaveStatus>(SaveStatus.SAVING);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+    const [isActuallyLoggedIn, setIsActuallyLoggedIn] = useState<boolean>(false);
     const [sentLoginEmail, setSentLoginEmail] = useState<boolean>(false);
 
 
@@ -69,6 +75,21 @@ function App() {
         });
     }, []);
 
+    const handleLogoutClick = useCallback(() => {
+        fetch('/api/logout', { credentials: 'include' })
+        .then(() => {
+            setIsLoggedIn(true); // close login modal
+            setSaveModalOpen(false);
+            setLoadFileModalOpen(true);
+            setIsConfirmDeleteOpen(false);
+            setDeleteErrorMessage("");
+            setFile({fileName: "", nodes: [], edges: [], email: "", isPublic: false});
+        })
+        .catch(error => {
+            console.error('Error logging out:', error);
+        });
+    }, []);
+
     const handleSaveFile = useCallback(() => {
         setSaveModalOpen(true); // Open modal immediately to show "Saving..." status
         
@@ -91,26 +112,42 @@ function App() {
         });
     }, [file]);
 
-    // Poll while we're not logged in to see if the user is logged in
+    // After 10 seconds, clear the 
+    useEffect(() => {
+        if (sentLoginEmail) {
+            setTimeout(() => {
+                setSentLoginEmail(false);
+            }, 10000);
+        }
+    }, [sentLoginEmail]);
+
+
+    // Repeatedly poll to see if we're actually logged in
     useEffect(() => {
         const interval = setInterval(() => {
-            if (!isLoggedIn) {
-                // test to see if the user is logged in
-                fetch('/api/sanity', { credentials: 'include' })
-                .then(response => {
-                    if (response.status === 201) {
-                        setIsLoggedIn(true);
-                    }
-                })
-            }
+            fetch('/api/sanity', { credentials: 'include' })
+            .then(response => {
+                if (response.status === 201) { setIsActuallyLoggedIn(true); }
+                else { setIsActuallyLoggedIn(false); }
+            })
+            .catch(error => {
+                console.error('Error checking if logged in:', error);
+                setIsActuallyLoggedIn(false);
+            });
         }, 1000);
         return () => clearInterval(interval);
-    }, [isLoggedIn]);
+    }, []);
 
 
     return (
         <div className='h-full w-full'>
-            <Flow file={file} setFile={setFile} handleSaveFile={handleSaveFile} setIsConfirmDeleteOpen={setIsConfirmDeleteOpen} />
+            <Flow 
+                file={file} 
+                setFile={setFile} 
+                handleSaveFile={handleSaveFile} 
+                setIsConfirmDeleteOpen={setIsConfirmDeleteOpen} 
+                isLoggedIn={isActuallyLoggedIn}
+            />
             <SaveModal 
                 isOpen={isSaveModalOpen}
                 onClose={() => {
@@ -125,11 +162,14 @@ function App() {
                 isOpen={isLoadFileModalOpen}
                 onClose={() => setLoadFileModalOpen(false)}
                 onLoad={setFile}
+                isLoggedIn={isActuallyLoggedIn}
             />
             <LoginModal 
                 isOpen={!isLoggedIn}
                 sentLoginEmail={sentLoginEmail}
                 onLoginClick={handleLoginClick}
+                onCancel={() => setIsLoggedIn(true)}
+                isLoggedIn={isActuallyLoggedIn}
             />
             <ConfirmCancelModal 
                 isOpen={isConfirmDeleteOpen}
@@ -137,6 +177,33 @@ function App() {
                 onConfirm={handleDelete}
                 title="Delete Diagram"
                 message={`Are you sure you want to delete "${file.fileName}"? This action cannot be undone. ${deleteErrorMessage}`}
+                confirmButtonText="Delete"
+            />
+            <div className='flex flex-row gap-2 absolute top-2 right-2 z-1000'>
+                <Button 
+                    variant="contained"
+                    startIcon={ <FilesIcon />}
+                    onClick={ () => {setLoadFileModalOpen(true); }}
+                >
+                    Files
+                </Button>
+
+                <Button 
+                    variant="contained"
+                    startIcon={ isActuallyLoggedIn ? <LogoutIcon /> : <LoginIcon />}
+                    onClick={ () => {if (isActuallyLoggedIn) { setIsConfirmLogoutOpen(true); } else { setIsLoggedIn(false); }}}
+                >
+                    {isActuallyLoggedIn ? "Logout" : "Login"}
+                </Button>
+            </div>
+            
+            <ConfirmCancelModal 
+                isOpen={isConfirmLogoutOpen}
+                onClose={() => setIsConfirmLogoutOpen(false)}
+                onConfirm={handleLogoutClick}
+                title="Logout"
+                message={`Are you sure you want to logout? You are currently logged ${isActuallyLoggedIn ? 'in' : 'out'}.`}
+                confirmButtonText="Logout"
             />
         </div>
     );

@@ -10,10 +10,11 @@ interface LoadFileModalProps {
     isOpen: boolean;
     onClose: () => void;
     onLoad: (data: FlowFile) => void;
+    isLoggedIn: boolean;
 }
 
 // Add this component near SaveModal
-function LoadFileModal({ isOpen, onClose, onLoad }: LoadFileModalProps) {
+function LoadFileModal({ isOpen, onClose, onLoad, isLoggedIn }: LoadFileModalProps) {
     const [files, setFiles] = useState<Array<FlowFile>>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -34,6 +35,7 @@ function LoadFileModal({ isOpen, onClose, onLoad }: LoadFileModalProps) {
                 });
         }
     }, [isOpen]);
+
 
     const handleLoadDiagrams = (file: FlowFile) => {
         onLoad(file);
@@ -93,6 +95,12 @@ function LoadFileModal({ isOpen, onClose, onLoad }: LoadFileModalProps) {
                             </div>
                         </div>
                     </div>
+                )}
+
+                {isLoggedIn? (
+                    <i>You are logged in</i>
+                ):(
+                    <i>You are not logged in</i>
                 )}
                 
                 <div className="mt-4 flex justify-end gap-2">

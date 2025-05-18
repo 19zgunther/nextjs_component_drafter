@@ -6,10 +6,12 @@ interface LoginModalProps {
     isOpen: boolean;
     sentLoginEmail: boolean;
     onLoginClick: (email: string) => void;
+    onCancel: () => void;
+    isLoggedIn: boolean;
 }
 
 
-function LoginModal({ isOpen, sentLoginEmail, onLoginClick }: LoginModalProps) {
+function LoginModal({ isOpen, sentLoginEmail, onLoginClick, onCancel, isLoggedIn }: LoginModalProps) {
     const [email, setEmail] = useState<string>('');
     if (!isOpen) return null;
 
@@ -40,11 +42,20 @@ function LoginModal({ isOpen, sentLoginEmail, onLoginClick }: LoginModalProps) {
                     >
                         Send Login Link
                     </button>
+                    <button onClick={onCancel} className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+                        Cancel
+                    </button>
                 </div>
 
                 {sentLoginEmail && (
                     <div className="mt-4 p-4 bg-green-900 text-green-200 rounded-md">
                         <p>Login email sent! Please check your email (including spam folder) for the login link.</p>
+                    </div>
+                )}
+
+                {isLoggedIn && (
+                    <div className="mt-4 p-4 bg-green-900 text-green-200 rounded-md">
+                        <p>You are logged in</p>
                     </div>
                 )}
             </div>
@@ -53,3 +64,4 @@ function LoginModal({ isOpen, sentLoginEmail, onLoginClick }: LoginModalProps) {
 }
 
 export { LoginModal };
+
