@@ -1,6 +1,6 @@
 "use client"
 
-import Flow from "./flow";
+import App from "./components/app";
 
 // TODO: Fix image not scaling above 100%
 
@@ -26,7 +26,7 @@ export default function Home() {
                 </div>
             </header>
             <div className="flex-1">
-                <Flow />
+                <App />
             </div>
         </main>
     );

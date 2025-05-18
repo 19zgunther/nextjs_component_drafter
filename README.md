@@ -1,3 +1,13 @@
+
+# To Run
+## Env Variables To Set
+### For Email Service
+- EMAIL_USER
+- EMAIL_PASSWORD
+### For Database Service
+- TODO: Add Database Service
+
+
 <details>
 <summary> Default NextJS Usage Info </summary>
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).

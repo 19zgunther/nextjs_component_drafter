@@ -1,10 +1,9 @@
-import { useState, useCallback, useRef } from 'react';
-import { NodeResizer } from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState, useCallback, useRef, useEffect } from 'react';
+import { NodeResizer, Handle } from 'reactflow';
 
 // Local imports
-import { NodeData } from './interfaces';
-
+import { NodeData, ComponentDesign } from './interfaces';
 
 
 function TextNode({ data, selected }: { data: NodeData, selected: boolean }) {    
@@ -111,9 +110,102 @@ function ImageNode({ data, selected }: { data: NodeData, selected: boolean }) {
     );
 }
 
+
+function renderComponentNodeCanvas(canvas: HTMLCanvasElement, design: ComponentDesign) {
+    const bb = canvas.getBoundingClientRect();
+    canvas.width = bb.width;
+    canvas.height = bb.height;
+    const ctx = canvas.getContext('2d');
+    const s = bb.width / design.width;
+    if (ctx) {
+        ctx.strokeStyle = design.lineColor;
+        ctx.lineWidth = design.lineWidth;
+        
+        for (const step of design.path) {
+            if (step.cmd === 'beginPath') {
+                ctx.beginPath();
+            } else if (step.cmd === 'closePath') {
+                ctx.closePath();
+            } else if (step.cmd === 'moveTo') {
+                ctx.moveTo(step.x * s, step.y * s);
+            } else if (step.cmd === 'lineTo') {
+                ctx.lineTo(step.x * s, step.y * s);
+            } else if (step.cmd === 'stroke') {
+                ctx.stroke();
+            } else if (step.cmd === 'arc') {
+                ctx.arc(step.x * s, step.y * s, step.r * s, step.startAngle, step.endAngle);
+            } else {
+                console.error('renderComponentNodeCanvas() Unknown command: ' + step.cmd);
+            }
+        }
+    }
+}
+
+
+function ComponentNode({ data, selected }: { data: NodeData, selected: boolean }) {    
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const scale = 5; // TODO: Make this dynamic so user can resize
+
+    // const design = BATTERY_DESGIN;
+
+    const design = data.design;
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (canvasRef.current && design) {
+                renderComponentNodeCanvas(canvasRef.current, design);
+            }
+        }, 100);
+        return () => clearInterval(interval);
+    }, [canvasRef, scale, design]);
+
+    if (!design) {
+        console.error("ComponentNode() No design found for node: " + data);
+        return null;
+    }
+
+
+    function applyScaleToStyle(style: any) {
+        return {
+            ...style,
+            left: style.left * scale,
+            bottom: style.bottom * scale,
+            right: style.right * scale
+        }
+    }
+
+    return (
+        <div className={"relative w-fit h-fit p-0 m-0 rounded-md border-1" + (selected ? " border-gray-800" : "border-transparent")}>
+            <canvas ref={canvasRef} style={{ width: design.width * scale, height: design.height * scale }} />
+
+            {design.handles.map((item, index) => (
+                <Handle
+                    key={index}
+                    id={item.id}
+                    type={item.type}
+                    position={item.position}
+                    style={applyScaleToStyle(item.style)}
+                    isConnectable={true}
+                />
+            ))}
+            {/* <Handle type="target" position={Position.Top} /> */}
+        </div>
+    );
+}
+
+
 const nodeTypes = {
     TextNode: TextNode,
     ImageNode: ImageNode,
+    ComponentNode: ComponentNode,
 };
 
-export { nodeTypes, TextNode, ImageNode };
+
+enum NodeType { 
+    TEXT = 'text',
+    IMAGE = 'image',
+    BATTERY = 'battery',
+    LED = 'led',
+}
+
+export { nodeTypes, TextNode, ImageNode, ComponentNode, NodeType };
