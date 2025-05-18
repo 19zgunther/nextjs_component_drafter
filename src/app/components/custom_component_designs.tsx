@@ -141,7 +141,7 @@ export const LED_DESGIN = {
     handles: [
         {
             id: 'a',
-            type: 'target',
+            type: 'source',
             position: Position.Bottom,
             style: {
                 left: 5
@@ -248,7 +248,7 @@ export const BATTERY_DESGIN = {
         },
         {
             id: 'b',
-            type: 'target',
+            type: 'source',
             position: Position.Bottom,
             style: {}
         }

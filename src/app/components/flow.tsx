@@ -1,6 +1,6 @@
 "use client"
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ReactFlow, Background, Controls, applyEdgeChanges, applyNodeChanges, addEdge } from 'reactflow';
+import { ReactFlow, Background, Controls, applyEdgeChanges, applyNodeChanges, addEdge, ConnectionMode } from 'reactflow';
 import { useCallback } from 'react';
 import 'reactflow/dist/style.css';
 
@@ -168,6 +168,7 @@ function Flow({file, setFile, handleSaveFile, setIsConfirmDeleteOpen, isLoggedIn
                 onNodesChange={onNodesChange} 
                 onEdgesChange={onEdgesChange} 
                 onConnect={onConnect}
+                connectionMode={ConnectionMode.Loose}
                 >
                 <Background />
                 <Controls />
