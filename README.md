@@ -1,3 +1,15 @@
+# P1 Future Updates (Before release)
+- [ ] Add cookie / auth service database to store cookies
+- [ ] Add database service to store files
+- [ ] Add component designer for designing/creating custom components
+- [ ] Add printable output (PDF or other output format)
+
+# P2 Future Updates
+- [ ] Improve user account management (Modal for users, ability to use passwords, 2 factor auth, etc)
+- [ ] Add better dashboard for public / user files (preview of flow/diagrams, etc)
+- [ ] Break files into smaller components (store images independently, store component rendering data separately)
+- [ ] Add more standard components
+
 
 # To Run
 ## Env Variables To Set
